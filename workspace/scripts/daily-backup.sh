@@ -107,7 +107,7 @@ find "$BACKUP_DIR" -name "*.json" -o -name "*.md" -o -name "*.sh" -o -name "*.tx
 done
 
 # --- Double-check: scan for remaining secrets ---
-LEAKED=$(grep -rEn '(sk-[a-zA-Z0-9]{20}|AIza[a-zA-Z0-9]{30}|github_pat_|[0-9]{10}:[A-Za-z0-9_-]{35})' "$BACKUP_DIR" --include="*.json" --include="*.md" --include="*.sh" 2>/dev/null || true)
+LEAKED=$(grep -rEn '(sk-proj-[a-zA-Z0-9]{20}|sk-[a-zA-Z0-9]{20,}|AIza[a-zA-Z0-9]{30}|github_pat_[a-zA-Z0-9]{20}|ghp_[a-zA-Z0-9]{20}|"botToken": "[TELEGRAM_BOT_TOKEN]"$BACKUP_DIR" --include="*.json" --include="*.md" --include="*.sh" 2>/dev/null | grep -v '\[.*_KEY\]\|\[.*_TOKEN\]\|\[.*REDACTED\]' || true)
 if [ -n "$LEAKED" ]; then
     log "WARNING: Possible remaining secrets detected!"
     ERRORS+="Possible leaked secrets found after scrubbing. "

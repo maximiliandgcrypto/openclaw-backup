@@ -73,6 +73,33 @@
         "lastDeliveryError": "⚠️ API rate limit reached. Please try again later.",
         "lastError": "⚠️ API rate limit reached. Please try again later."
       }
+    },
+    {
+      "id": "f93d1eed-af65-426d-810d-57283ae52d1b",
+      "name": "daily-backup",
+      "description": "Daily backup to GitHub (secrets scrubbed)",
+      "enabled": true,
+      "createdAtMs": 1772707333127,
+      "updatedAtMs": 1772707333127,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 4 * * *",
+        "tz": "Europe/Berlin"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run this shell command exactly once using the exec tool and output the result:\n\nbash ~/.openclaw/workspace/scripts/daily-backup.sh\n\nTimeout: 120 seconds. Output the full stdout as your response. Do NOT re-run or call other tools.",
+        "model": "google/gemini-2.5-flash",
+        "timeoutSeconds": 180
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772767800000
+      }
     }
   ]
 }
