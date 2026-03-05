@@ -1,0 +1,296 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.3",
+    "lastTouchedAt": "2026-03-05T10:31:50.965Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-03-05T10:31:50.897Z",
+    "lastRunVersion": "2026.3.3",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  },
+  "logging": {
+    "redactSensitive": "tools"
+  },
+  "update": {
+    "auto": {
+      "enabled": true,
+      "stableDelayHours": 10,
+      "stableJitterHours": 10,
+      "betaCheckIntervalHours": 12
+    }
+  },
+  "browser": {
+    "enabled": true,
+    "headless": true,
+    "noSandbox": true,
+    "attachOnly": true
+  },
+  "auth": {
+    "profiles": {
+      "anthropic:default": {
+        "provider": "anthropic",
+        "mode": "token"
+      },
+      "anthropic:manual": {
+        "provider": "anthropic",
+        "mode": "token"
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "deepseek": {
+        "baseUrl": "https://api.deepseek.com/v1",
+        "apiKey": "[API_KEY_REDACTED]",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "deepseek-chat",
+            "name": "DeepSeek V3"
+          },
+          {
+            "id": "deepseek-reasoner",
+            "name": "DeepSeek R1"
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic/claude-opus-4-6"
+      },
+      "imageModel": {
+        "primary": "google/gemini-2.5-flash",
+        "fallbacks": [
+          "google/gemini-2.0-flash"
+        ]
+      },
+      "models": {
+        "anthropic/claude-opus-4-6": {
+          "alias": "opus"
+        },
+        "anthropic/claude-sonnet-4-6": {
+          "alias": "sonnet"
+        },
+        "google/gemini-2.5-flash": {
+          "alias": "flash"
+        },
+        "deepseek/deepseek-chat": {
+          "alias": "ds"
+        },
+        "deepseek/deepseek-reasoner": {
+          "alias": "r1"
+        },
+        "google/gemini-2.5-flash-lite": {
+          "alias": "flashlite"
+        }
+      },
+      "workspace": "/home/openclaw/.openclaw/workspace",
+      "contextTokens": 200000,
+      "memorySearch": {
+        "enabled": true,
+        "provider": "gemini"
+      },
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "1h"
+      },
+      "compaction": {
+        "mode": "safeguard",
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000,
+          "prompt": "Write any lasting notes to memory/YYYY-MM-DD.md and update MEMORY.md if needed; reply with NO_REPLY if nothing to store.",
+          "systemPrompt": "Session nearing compaction. Store durable memories now."
+        }
+      },
+      "heartbeat": {
+        "every": "30m",
+        "model": "google/gemini-2.5-flash-lite"
+      },
+      "subagents": {
+        "maxConcurrent": 1,
+        "archiveAfterMinutes": 60,
+        "model": "deepseek/deepseek-reasoner"
+      }
+    }
+  },
+  "tools": {
+    "profile": "full",
+    "media": {
+      "audio": {
+        "enabled": true,
+        "models": [
+          {
+            "type": "cli",
+            "command": "whisper",
+            "args": [
+              "--model",
+              "base",
+              "{{MediaPath}}"
+            ],
+            "timeoutSeconds": 45
+          }
+        ]
+      }
+    },
+    "exec": {
+      "host": "gateway",
+      "security": "full",
+      "ask": "off"
+    },
+    "fs": {
+      "workspaceOnly": true
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "command-logger": {
+          "enabled": true
+        },
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "web": {
+    "enabled": true
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "[TELEGRAM_BOT_TOKEN]",
+      "groupPolicy": "allowlist",
+      "streaming": "partial"
+    },
+    "discord": {
+      "enabled": true,
+      "token": "[DISCORD_BOT_TOKEN]",
+      "groupPolicy": "allowlist",
+      "streaming": "off",
+      "dmPolicy": "allowlist",
+      "allowFrom": [
+        "690605911856644236"
+      ],
+      "guilds": {
+        "1331581287806406779": {
+          "requireMention": true,
+          "users": [
+            "690605911856644236"
+          ]
+        }
+      }
+    }
+  },
+  "discovery": {
+    "mdns": {
+      "mode": "minimal"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "controlUi": {
+      "allowedOrigins": [
+        "https://ubuntu-4gb-hel1-1.tail463d20.ts.net"
+      ]
+    },
+    "auth": {
+      "mode": "token",
+      "token": "[AUTH_TOKEN]"
+    },
+    "trustedProxies": [
+      "127.0.0.1"
+    ],
+    "tailscale": {
+      "mode": "serve",
+      "resetOnExit": false
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.list",
+        "canvas.eval",
+        "system.run"
+      ]
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "pnpm"
+    },
+    "entries": {
+      "apple-notes": {
+        "enabled": true
+      },
+      "openai-whisper-api": {
+        "apiKey": "[API_KEY_REDACTED]"
+      }
+    }
+  },
+  "plugins": {
+    "allow": [
+      "telegram",
+      "discord",
+      "memory-core"
+    ],
+    "slots": {
+      "memory": "memory-core"
+    },
+    "entries": {
+      "memory-core": {
+        "enabled": true
+      },
+      "memory-lancedb": {
+        "enabled": false
+      }
+    }
+  },
+  "memory": {
+    "backend": "qmd",
+    "citations": "auto",
+    "qmd": {
+      "command": "/home/openclaw/.bun/bin/qmd",
+      "includeDefaultMemory": true,
+      "searchMode": "search",
+      "sessions": {
+        "enabled": true,
+        "retentionDays": 90
+      },
+      "update": {
+        "interval": "5m",
+        "debounceMs": 15000,
+        "onBoot": true,
+        "waitForBootSync": false
+      },
+      "limits": {
+        "maxResults": 8,
+        "timeoutMs": 5000
+      },
+      "paths": [
+        {
+          "name": "learnings",
+          "path": "/home/openclaw/.openclaw/workspace/.learnings",
+          "pattern": "**/*.md"
+        }
+      ]
+    }
+  }
+}

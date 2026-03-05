@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "c620881a-e077-49dd-9767-5ff42c68e61a",
+      "name": "daily-reverse-prompt",
+      "description": "Täglicher Reverse Prompt - proaktive Task-Vorschläge um 7 Uhr morgens Berlin Zeit",
+      "enabled": true,
+      "createdAtMs": 1772638842171,
+      "updatedAtMs": 1772695718684,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7 * * *",
+        "tz": "Europe/Berlin"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Du bist der persönliche AI-Assistent von Maximilian. Deine Aufgabe: Starte eine Recherche und liefere proaktive Task-Vorschläge.\n\nSchritt 1: Lies MEMORY.md und die letzten memory/ Dateien im Workspace.\n\nSchritt 2: Spawne einen Sub-Agenten mit Opus (model=anthropic/claude-opus-4-6) für die eigentliche Recherche mit folgendem Task:\n\"Du bist der persönliche AI-Assistent von Maximilian. Lies MEMORY.md und die letzten memory/ Dateien. Basierend auf allem was du über Maximilian weißt: Recherchiere und schlage 3 konkrete, kreative Tasks vor die ihr heute gemeinsam angehen könnt. Berücksichtige aktuelle Trends, seine Projekte und offene Punkte. Format: Kurzer Morgengruß + 3 nummerierte Vorschläge mit je 2-3 Sätzen Begründung. Knapp, motivierend, konkret.\"\n\nSchritt 3: Warte auf das Ergebnis des Sub-Agenten und gib es als finale Antwort aus.",
+        "model": "google/gemini-2.5-flash",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "discord",
+        "to": "1478779021280940092"
+      },
+      "state": {
+        "nextRunAtMs": 1772776800000,
+        "lastRunAtMs": 1772695421249,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 13360,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "26813f30-005f-4d25-8a25-a93db3c20b0f",
+      "agentId": "main",
+      "sessionKey": "agent:main:discord:channel:1478758407627346034",
+      "name": "shardib2-monitor",
+      "enabled": true,
+      "createdAtMs": 1772656234292,
+      "updatedAtMs": 1772704376898,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 300000,
+        "anchorMs": 1772656234292
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "google/gemini-2.5-flash",
+        "message": "You are monitoring @ShardiB2 on Twitter/X for new posts and forwarding them to Discord.\n\nSteps:\n1. Run the monitor script:\n   ```\n   cd /home/openclaw/.openclaw/workspace && python3 twitter/shardib-monitor.py 2>/dev/null\n   ```\n   Use the exec tool to run this command (timeout 60s).\n\n2. Parse the JSON output from stdout.\n\n3. If `login_failed` is true:\n   - Send a Telegram message to target='5214734582' (channel=telegram):\n     '⚠️ ShardiB2 Twitter-Bot: Login fehlgeschlagen! Cookies abgelaufen. Bitte neue Cookies unter /workspace/twitter/cookies.json hinterlegen.'\n   - Stop here.\n\n4. If `error` is not null (and login_failed is false):\n   - Just stop silently (transient error, will retry in 5 min).\n\n5. If `new_posts` is a non-empty array:\n   For each post in new_posts (use message tool, channel=discord, target='1478757600848773152'):\n   Send exactly this format:\n   ```\n   📌 **@ShardiB2**\n   📅 {post.timestamp formatted as DD.MM.YYYY HH:MM UTC, e.g. '04.03.2026 20:12 UTC'}\n\n   {post.text}\n\n   🔗 {post.url}\n   ```\n\n6. If `new_posts` is empty: do nothing, exit silently.\n\nDo not send any output or messages other than what's described above.",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772707976898,
+        "lastRunAtMs": 1772704361749,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 15149,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 5,
+        "lastDelivered": false,
+        "lastDeliveryError": "⚠️ API rate limit reached. Please try again later.",
+        "lastError": "⚠️ API rate limit reached. Please try again later."
+      }
+    }
+  ]
+}
