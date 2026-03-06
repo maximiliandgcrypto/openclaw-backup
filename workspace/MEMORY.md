@@ -77,10 +77,19 @@ _Kuratierte Erinnerungen — das Wichtigste, das ich über Maximilian und unsere
 - Channels: #new-ideas (1478779021280940092), #monitoring (1478855159474950377), #shardib2 (1478757600848773152)
 - Maximilian Discord ID: 690605911856644236
 
-## Twitter/X Monitoring
+## Twitter/X Monitoring — ShardiB2
 
-- ShardiB2 Monitor Cron (alle 5 Min) — hat Rate-Limit-Fehler, evtl. instabil
-- Browser-Cookies Ansatz funktioniert grundsätzlich
+- **Cron-Job `shardib2-monitor`** (ID: 26813f30-005f-4d25-8a25-a93db3c20b0f)
+- Alle 5 Min, Claude Sonnet 4.6, isoliert
+- Scrapt BEIDE Tabs: reguläre Posts + Subscriber-Tab (`/superfollows`)
+- Posts → Discord `#twitter-posts` (1478757600848773152)
+- Login-Fehler → Telegram-Alert an Maximilian
+- Cookies: `/workspace/twitter/cookies.json`
+- State: `/workspace/twitter/shardib-state.json`
+- Scripts: `/workspace/twitter/shardib-monitor.py` (+ fetch-date, fetch-subscriber)
+- "Show more"-Fix eingebaut (lange Posts werden aufgeklappt)
+- xurl wird NICHT genutzt — X API kostet, Maximilian will das nicht
+- Bulk-Import 02.-05.03.2026 erledigt (regulär + subscriber)
 
 ## Lessons Learned
 
@@ -90,12 +99,60 @@ _Kuratierte Erinnerungen — das Wichtigste, das ich über Maximilian und unsere
 - Gateway-Restart killt laufende Agent-Sessions (Henne-Ei-Problem beim Testen)
 - OpenAI Embeddings Quota aufgebraucht → auf Gemini gewechselt
 
+## NordVPN
+
+- NordVPN CLI installiert auf Server ✅
+- Analytics deaktiviert ✅
+- Login ausstehend — braucht Access Token von my.nordaccount.com (nicht Username/Password!)
+- Account: maximilian.graetz@outlook.con
+- Zweck: YouTube und andere Services die Cloud-IPs blocken
+
+## Bekannte ARM-Inkompatibilitäten
+
+- `summarize` CLI (Homebrew) → x86 only, Exec Format Error auf aarch64
+- Lesson: Homebrew Binaries auf ARM immer prüfen
+
+## Maximilian als Trader
+
+- Aktiver Trader, Ziel: Geld verdienen
+- "Saraton Investments" = geplantes Trading-Business
+- Hat Pine Script Algorithmus (reverse-engineered) — **Code noch ausstehend**
+- TradingView Premium + TradingAlpha.io
+- Fokus: Technische Analyse > News > Fundamentals > Sentiment
+- Will Backtesting in Python (Parameter-Sweep)
+- Interessiert an Polymarket / Prediction Markets
+- **Pine Script erhalten** → `data/pinescript/trend-suite-graetz.pine` (399 Zeilen)
+- Algo funktioniert auf 5min, 1h, 4h, Daily — höherer Timeframe = besser
+- Day + Swing Trading, alle Assets (Aktien, Options, Crypto, Futures), mit Leverage
+- Risk Management dynamisch (A-Setup = mehr Kapital, B-Setup = weniger)
+- Dynamischer Stop Loss gewünscht (z.B. bei Trendlinie)
+- Größtes Problem: FOMO-Trades die nicht vom Algo kamen
+- Ziel: Multi-Millionär
+- **Meine Prioritäten**: 1) Algo backtesten 2) Research 3) Signale finden
+
+## Mission Control Dashboard
+
+- Live: http://ubuntu-4gb-hel1-1.tail463d20.ts.net:8080
+- Systemd Service `mission-control` (Port 8080, auto-restart)
+- Tabs: Dashboard, Signals, Research, Cron Jobs, Memory, Automation, System
+- Update-Script: `scripts/update-mission-control.py`
+
+## Nacht-Research
+
+- Cron `nightly-research` (ID: 3daccc8b-d4a6-406f-8bb4-cd3ec1c16404)
+- 03:00 Berlin, Opus
+- REGEL: Nur fertige umgesetzte Arbeit — KEINE Ideen/Vorschläge
+- Ergebnisse: `memory/nightly-research/` + Telegram + Discord
+
 ## Offene Punkte
 
+- Pine Script Code von Maximilian → Python Backtesting Engine bauen
+- NordVPN Access Token holen → VPN verbinden
 - DeepSeek Guthaben aufladen
 - Gemini Pro braucht Billing für Nutzung
-- Brave API Key fehlt (web_search geht nicht)
-- xurl nicht via OAuth verbunden (nur Browser-Cookies)
+- Brave API Key fehlt (web_search geht nicht) — web_fetch auf CoinDesk funktioniert als Alternative
+- xurl nicht verbunden — Maximilian will X API nicht (kostet pro Anfrage)
 - OpenAI Guthaben aufladen (Embeddings + Whisper)
 - Mission Control bauen? (AlexFinn Hack #6)
-- ShardiB2 Monitor stabilisieren
+- ShardiB2 Monitor läuft stabil ✅ (Stand 05.03.)
+- Peter Steinberger Report mit echten Transcripts erweitern (nach VPN-Setup)

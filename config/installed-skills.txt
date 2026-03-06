@@ -11,6 +11,7 @@ clawhub
 coding-agent
 discord
 eightctl
+find-skills
 gemini
 gh-issues
 gifgrep
