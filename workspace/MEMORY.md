@@ -7,6 +7,9 @@ _Kuratierte Erinnerungen — das Wichtigste, das ich über Maximilian und unsere
 - Telegram: @maximiliandg
 - Schreibt Deutsch (manchmal Englisch gemischt)
 - Direkt, kein Blabla
+- **Immer sofort starten** — nie fragen ob er anfangen soll, einfach machen
+- **Nach JEDER erledigten Aufgabe Report an Telegram** — was wurde gemacht, Ergebnis, was kommt als nächstes
+- **Backtester-Code IMMER reviewen lassen** — zweiter Agent prüft vor Ausführung. Kein Backtest ohne Review. V5 war komplett kaputt (0 Trades) weil kein Review.
 - Versteht Tech gut — weiß wie der Agent funktioniert
 - Hat OpenClaw im März 2026 frisch aufgesetzt
 - Name: Maximilian (nicht Max)
@@ -26,11 +29,12 @@ _Kuratierte Erinnerungen — das Wichtigste, das ich über Maximilian und unsere
 - OpenAI Key gesetzt ✅ (aber Quota aufgebraucht!)
 - Browser (Chromium headless) läuft ✅
 
-## Aktive Provider (Stand 2026-03-05)
+## Aktive Provider (Stand 2026-03-06)
 
-- Anthropic Claude Opus 4.6 → **neues Default-Modell** (umgestellt am 05.03.) ✅
-- Google Gemini (Flash Lite für Heartbeats, Flash für Crons) ✅
+- Anthropic Claude Opus 4.6 → Default für ALLES (Main + alle Cron Jobs) ✅
+- Google Gemini → Free Tier Limit erreicht (20 Req/Tag), NICHT MEHR NUTZEN für Crons ⚠️
 - DeepSeek (V3 + R1 konfiguriert, aber kein Guthaben!) ⚠️
+- Maximilian will Opus für alles — keine Kosten-Optimierung mit schwächeren Modellen
 
 ## Server
 
@@ -59,11 +63,14 @@ _Kuratierte Erinnerungen — das Wichtigste, das ich über Maximilian und unsere
 - .learnings/ Ordner mit LEARNINGS.md, ERRORS.md, FEATURE_REQUESTS.md
 - Logge Fehler, Korrekturen, Feature Requests automatisch
 
-## Cron Jobs
+## Cron Jobs (Stand 2026-03-06)
 
-- daily-reverse-prompt: 7:00 Berlin → Discord #new-ideas
-  - Gemini Flash als Trigger → spawnt Opus Sub-Agent für Research
-  - ID: c620881a-e077-49dd-9767-5ff42c68e61a
+- ALLE auf Claude Opus 4.6 (Maximilian will keine günstigeren Modelle!)
+- daily-reverse-prompt: 7:00 Berlin → Discord #new-ideas (c620881a)
+- shardib2-monitor: alle 5 Min (26813f30)
+- daily-backup: 4:30 Berlin (f93d1eed)
+- nightly-research: 3:00 Berlin → Telegram + Discord (3daccc8b)
+- work-watchdog: alle 30 Min → Telegram (78910bee)
 
 ## Systemd Timer
 
@@ -98,6 +105,8 @@ _Kuratierte Erinnerungen — das Wichtigste, das ich über Maximilian und unsere
 - `openclaw message send` nutzt `--target`, nicht `--to`
 - Gateway-Restart killt laufende Agent-Sessions (Henne-Ei-Problem beim Testen)
 - OpenAI Embeddings Quota aufgebraucht → auf Gemini gewechselt
+- **Sub-Agent fertig → SOFORT live-status.json updaten** (Agent + Todo auf "done"). NIE vergessen!
+- **EIGENSTÄNDIG ARBEITEN** — Nicht auf Input warten, selbst denken, selbst handeln. Partner, nicht Tool.
 
 ## NordVPN
 
@@ -129,13 +138,26 @@ _Kuratierte Erinnerungen — das Wichtigste, das ich über Maximilian und unsere
 - Größtes Problem: FOMO-Trades die nicht vom Algo kamen
 - Ziel: Multi-Millionär
 - **Meine Prioritäten**: 1) Algo backtesten 2) Research 3) Signale finden
+- **TradingView Premium** — Cookies erhalten, Browser eingeloggt (Stand 06.03.)
+- **Backtester V2 fertig**: 19 Ticker, Signal-Kombinations-Matrix, beste Kombi = Reversal+TrendLine+VMA_Color
+- **Maximilian will wissen**: Welche Signal-Kombination funktioniert am besten pro Ticker/TF
+- Nächster Schritt: TradingView CSV-Export → Backtester V3 mit echten langen Historien
+
+## Task-Creator UI ✅ (06.03.)
+
+- Modal im Dashboard: Aufgaben erstellen ohne Telegram
+- Felder: Titel, Beschreibung, Priorität, AI Modell, Wer darf starten?, erweiterte Optionen, Datei-Upload
+- API: POST /api/todos/create + /api/todos/update (beide speichern model + startPermission)
+- Start-Berechtigungen: manual (nur Maximilian), watchdog (auto+manuell), auto (jeder Agent)
 
 ## Mission Control Dashboard
 
 - Live: http://ubuntu-4gb-hel1-1.tail463d20.ts.net:8080
 - Systemd Service `mission-control` (Port 8080, auto-restart)
-- Tabs: Dashboard, Signals, Research, Cron Jobs, Memory, Automation, System
+- Tabs: Dashboard, 🔴 Live, Signals, Research, Cron Jobs, Memory, Automation, System, 📈 Backtest
+- Features: Saraton Logo, Börsen-Countdown, Tab-Memory (localStorage), Live Agent Status, System Health
 - Update-Script: `scripts/update-mission-control.py`
+- live-status.json: Agent-Status Daten (manuell aktualisieren wenn Sub-Agents starten/enden)
 
 ## Nacht-Research
 
@@ -144,15 +166,32 @@ _Kuratierte Erinnerungen — das Wichtigste, das ich über Maximilian und unsere
 - REGEL: Nur fertige umgesetzte Arbeit — KEINE Ideen/Vorschläge
 - Ergebnisse: `memory/nightly-research/` + Telegram + Discord
 
+## Dashboard Start-Button
+- Offene Todos haben ▶️ Start Button
+- Klick → System Event + Telegram-Nachricht + Status auf "in-progress"
+- Server braucht PATH mit `/home/linuxbrew/.linuxbrew/bin` für Node/openclaw
+- Fehler-Feedback im Frontend (Toast + Retry)
+
+## Backtester Versionen
+- V2: 76 Runs, 19 Ticker, 7 Signale (yfinance Daten)
+- V3: 76 Runs, 19 Ticker, 7 Signale (TV Max Daten, 544k Bars)
+- V4: 95 Runs, 19 Ticker × 5 TFs, 39 Metriken, VMA Stop-Loss ← AKTUELL BESTE
+- V5: 10 Runs, BTC+SOL × 5 TFs, 15 Signale, AND-Logik, ~7k Combos
+  - Problem: Viele Top-Kombis haben nur 3 Trades → statistisch schwach
+- Dashboard hat Versions-Dropdown zum Umschalten (V2/V3/V4/V5)
+
 ## Offene Punkte
 
-- Pine Script Code von Maximilian → Python Backtesting Engine bauen
+- ~~Pine Script Code von Maximilian → Python Backtesting Engine bauen~~ ✅ (V2 fertig, 06.03.)
+- TradingView CSV-Export → Backtester V3 mit echten langen Historien
 - NordVPN Access Token holen → VPN verbinden
 - DeepSeek Guthaben aufladen
-- Gemini Pro braucht Billing für Nutzung
+- Gemini Free Tier Limit (20 Req/Tag) — NICHT mehr für Crons nutzen, alles Opus
 - Brave API Key fehlt (web_search geht nicht) — web_fetch auf CoinDesk funktioniert als Alternative
 - xurl nicht verbunden — Maximilian will X API nicht (kostet pro Anfrage)
 - OpenAI Guthaben aufladen (Embeddings + Whisper)
-- Mission Control bauen? (AlexFinn Hack #6)
+- ~~Mission Control bauen~~ ✅ (gebaut + Live-Tab, Backtest-Tab, Börsen-Header, 06.03.)
 - ShardiB2 Monitor läuft stabil ✅ (Stand 05.03.)
 - Peter Steinberger Report mit echten Transcripts erweitern (nach VPN-Setup)
+- Nightly-Research verifizieren (hat NOCH NIE erfolgreich gelaufen)
+- live-status.json manuell updaten wenn Sub-Agents starten/enden

@@ -7,7 +7,7 @@
       "description": "Täglicher Reverse Prompt - proaktive Task-Vorschläge um 7 Uhr morgens Berlin Zeit",
       "enabled": true,
       "createdAtMs": 1772638842171,
-      "updatedAtMs": 1772695718684,
+      "updatedAtMs": 1772792639363,
       "schedule": {
         "kind": "cron",
         "expr": "0 7 * * *",
@@ -18,7 +18,7 @@
       "payload": {
         "kind": "agentTurn",
         "message": "Du bist der persönliche AI-Assistent von Maximilian. Deine Aufgabe: Starte eine Recherche und liefere proaktive Task-Vorschläge.\n\nSchritt 1: Lies MEMORY.md und die letzten memory/ Dateien im Workspace.\n\nSchritt 2: Spawne einen Sub-Agenten mit Opus (model=anthropic/claude-opus-4-6) für die eigentliche Recherche mit folgendem Task:\n\"Du bist der persönliche AI-Assistent von Maximilian. Lies MEMORY.md und die letzten memory/ Dateien. Basierend auf allem was du über Maximilian weißt: Recherchiere und schlage 3 konkrete, kreative Tasks vor die ihr heute gemeinsam angehen könnt. Berücksichtige aktuelle Trends, seine Projekte und offene Punkte. Format: Kurzer Morgengruß + 3 nummerierte Vorschläge mit je 2-3 Sätzen Begründung. Knapp, motivierend, konkret.\"\n\nSchritt 3: Warte auf das Ergebnis des Sub-Agenten und gib es als finale Antwort aus.",
-        "model": "google/gemini-2.5-flash",
+        "model": "anthropic/claude-opus-4-6",
         "timeoutSeconds": 120
       },
       "delivery": {
@@ -27,13 +27,13 @@
         "to": "1478779021280940092"
       },
       "state": {
-        "nextRunAtMs": 1772776800000,
-        "lastRunAtMs": 1772695421249,
+        "nextRunAtMs": 1772863200000,
+        "lastRunAtMs": 1772776800007,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 13360,
-        "lastDelivered": true,
-        "lastDeliveryStatus": "delivered",
+        "lastDurationMs": 19084,
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0
       }
     },
@@ -44,7 +44,7 @@
       "name": "shardib2-monitor",
       "enabled": true,
       "createdAtMs": 1772656234292,
-      "updatedAtMs": 1772767798120,
+      "updatedAtMs": 1772854092600,
       "schedule": {
         "kind": "every",
         "everyMs": 300000,
@@ -62,11 +62,11 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772768070726,
-        "lastRunAtMs": 1772767770726,
+        "nextRunAtMs": 1772854367804,
+        "lastRunAtMs": 1772854067804,
         "lastRunStatus": "ok",
         "lastStatus": "ok",
-        "lastDurationMs": 27394,
+        "lastDurationMs": 24796,
         "lastDeliveryStatus": "not-delivered",
         "consecutiveErrors": 0,
         "lastDelivered": false
@@ -78,7 +78,7 @@
       "description": "Daily backup to GitHub (secrets scrubbed)",
       "enabled": true,
       "createdAtMs": 1772707333127,
-      "updatedAtMs": 1772748615163,
+      "updatedAtMs": 1772792636010,
       "schedule": {
         "kind": "cron",
         "expr": "30 4 * * *",
@@ -96,65 +96,15 @@
         "mode": "none"
       },
       "state": {
-        "nextRunAtMs": 1772767800000,
-        "runningAtMs": 1772767800008
-      }
-    },
-    {
-      "id": "26a61b2a-c377-4041-b97a-cd6524e87908",
-      "name": "shardib2-calls-analyzer",
-      "description": "Alle 5 Min: Checkt #twitter-posts auf neue ShardiB2 Posts, analysiert Kauf/Verkaufssignale, postet in #shardib-calls und taggt Maximilian",
-      "enabled": false,
-      "createdAtMs": 1772719800000,
-      "updatedAtMs": 1772719800000,
-      "schedule": {
-        "kind": "interval",
-        "intervalMs": 300000
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "task": "Du bist ein Trading-Signal-Analyzer fuer ShardiB2. \n\nABLAUF:\n1. Lies die letzten 10 Nachrichten aus Discord Channel #twitter-posts (ID: 1478757600848773152) mit dem message tool (channel=discord, action=read, channelId=1478757600848773152, limit=10)\n2. Lies die letzte bekannte Message-ID aus der Datei /home/openclaw/.openclaw/workspace/memory/shardib2-last-msg.txt\n3. Vergleiche: Gibt es NEUE Posts (Message-ID groesser als gespeicherte)?\n\nWENN NEUE POSTS:\na. Analysiere jeden neuen Post: Enthaelt er ein $TICKER Symbol? Ist es ein Kauf-Signal, Verkauf-Signal, Short, oder nur Info/Kommentar?\nb. Fuer JEDEN Post mit klarem Signal:\n   - Poste in #shardib-calls via: openclaw message send --channel discord --target 1478757663369068725 --message \"...\"\n   - Format: \"🚨 <@690605911856644236> **$TICKER** — SIGNAL: [BUY/SELL/SHORT/CLOSE/INFO] — [Zusammenfassung des Posts]\"\n   - Fuege das Signal zum Tracker hinzu: source /home/openclaw/.openclaw/workspace/trading-venv/bin/activate && python3 /home/openclaw/.openclaw/workspace/scripts/shardib2-tracker.py add TICKER DIRECTION --date \"YYYY-MM-DDTHH:MM:SS\" --note \"Post-Text\"\nc. Speichere die neueste Message-ID in /home/openclaw/.openclaw/workspace/memory/shardib2-last-msg.txt\n\nWENN KEINE NEUEN POSTS:\nAntworte nur: HEARTBEAT_OK\n\nREGELN:\n- Nur Posts analysieren die NEUER sind als die gespeicherte Message-ID\n- $TICKER ohne Dollar-Zeichen an den Tracker uebergeben\n- BUY/SELL/SHORT/CLOSE/HOLD als Direction\n- Tagge IMMER <@690605911856644236> bei Signalen\n- Bei reinen Info-Posts (kein klares Signal) trotzdem posten aber als INFO markieren\n- KEIN Spam: Wenn es nur ein Retweet ohne Kommentar ist, ignorieren",
-      "state": {
-        "scheduleErrorCount": 7,
-        "lastError": "schedule error: Error: invalid cron schedule: expr is required"
-      }
-    },
-    {
-      "id": "05862f6a-6659-4050-bf0a-eb6e54bc9a54",
-      "name": "shardib2-price-update",
-      "description": "Stuendliches Update: Kurse aktualisieren, Notion Sync, Performance Report",
-      "enabled": true,
-      "createdAtMs": 1772720000000,
-      "updatedAtMs": 1772720000000,
-      "schedule": {
-        "kind": "cron",
-        "expr": "0 14-22 * * 1-5",
-        "tz": "America/New_York"
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "task": "Fuehre das Kurs-Update fuer den ShardiB2 Tracker aus:\n\n1. Aktiviere venv und fuehre das Update-Script aus:\n   source /home/openclaw/.openclaw/workspace/trading-venv/bin/activate && python3 /home/openclaw/.openclaw/workspace/scripts/shardib2-notion-sync.py\n\n2. Wenn erfolgreich: HEARTBEAT_OK\n3. Wenn Fehler: Melde den Fehler.",
-      "state": {
-        "nextRunAtMs": 1772823600000
-      }
-    },
-    {
-      "id": "bea3cb55-1592-4a82-9175-57f96ac180c5",
-      "name": "shardib2-daily-analysis",
-      "description": "Taegliche ShardiB2 Analyse um 8 Uhr Berlin. Liest alle Posts, analysiert Signale, updated Tracker und Notion, postet Report.",
-      "enabled": true,
-      "createdAtMs": 1772724000000,
-      "updatedAtMs": 1772724000000,
-      "schedule": {
-        "kind": "cron",
-        "expr": "0 8 * * *",
-        "tz": "Europe/Berlin"
-      },
-      "sessionTarget": "isolated",
-      "wakeMode": "now",
-      "task": "Du bist der ShardiB2 Trading Analyst. Jeden Morgen um 8 Uhr Berlin machst du folgendes:\n\n1. LESE ALLE Posts aus Discord #twitter-posts (ID: 1478757600848773152) — nimm die letzten 50 Nachrichten (message tool, channel=discord, action=read, channelId=1478757600848773152, limit=50)\n\n2. ANALYSIERE jeden Post:\n   - Extrahiere $TICKER Symbole\n   - Bestimme Signal-Typ: BUY, SELL, SHORT, CLOSE, HOLD, INFO\n   - Identifiziere Positions-Aenderungen (Closes, Cuts, Exits)\n   - Achte auf indirekte Signale: \"cut\", \"closed\", \"took profits\", \"out of\", \"sold\"\n\n3. UPDATE den Tracker fuer NEUE Signale:\n   source /home/openclaw/.openclaw/workspace/trading-venv/bin/activate\n   python3 /home/openclaw/.openclaw/workspace/scripts/shardib2-tracker.py add TICKER DIRECTION --date \"YYYY-MM-DDTHH:MM:SS\" --note \"Post-Text\"\n\n4. CLOSE Signale die beendet wurden:\n   python3 /home/openclaw/.openclaw/workspace/scripts/shardib2-tracker.py close SIGNAL_ID\n\n5. UPDATE alle Kurse:\n   python3 /home/openclaw/.openclaw/workspace/scripts/shardib2-tracker.py update\n\n6. SYNC zu Notion:\n   python3 /home/openclaw/.openclaw/workspace/scripts/shardib2-notion-sync.py\n\n7. GENERIERE Report:\n   python3 /home/openclaw/.openclaw/workspace/scripts/shardib2-tracker.py report\n\n8. POSTE den Report + Tages-Analyse in #shardib-calls:\n   openclaw message send --channel discord --target 1478757663369068725 --message \"REPORT_TEXT\"\n   - Tagge <@690605911856644236> nur wenn es wichtige neue Signale gibt\n\n9. SPEICHERE die letzte Message-ID in /home/openclaw/.openclaw/workspace/memory/shardib2-last-msg.txt\n\nWICHTIG:\n- Lies die bestehenden Signale vorher: cat /home/openclaw/.openclaw/workspace/data/shardib2/signals.json\n- Keine Duplikate! Pruefe ob ein Ticker+Direction schon existiert bevor du add aufrufst\n- Schliesse alte Positionen wenn ShardiB2 sagt sie hat verkauft/geschlossen\n- Analysiere auch die grossen End-of-Day Updates — die enthalten die wichtigsten Infos\n- Der Report soll Markt-Outlook und die wichtigsten Aenderungen enthalten",
-      "state": {
-        "nextRunAtMs": 1772780400000
+        "nextRunAtMs": 1772854200000,
+        "lastRunAtMs": 1772767800011,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 14318,
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0,
+        "runningAtMs": 1772854200005
       }
     },
     {
@@ -163,7 +113,7 @@
       "description": "Naechtliche Research-Session: Neue Trading-Ideen, Polymarket, Algorithmus-Insights, ueberrasche Maximilian morgens",
       "enabled": true,
       "createdAtMs": 1772726000000,
-      "updatedAtMs": 1772726000000,
+      "updatedAtMs": 1772849212360,
       "schedule": {
         "kind": "cron",
         "expr": "0 3 * * *",
@@ -171,9 +121,99 @@
       },
       "sessionTarget": "isolated",
       "wakeMode": "now",
-      "task": "PRIORITAET HEUTE NACHT: BACKTESTER BAUEN\n\nDu hast den Pine Script Algorithmus \"Trend Suite (GRAETZ)\" in /home/openclaw/.openclaw/workspace/data/pinescript/trend-suite-graetz.pine (399 Zeilen).\n\nAUFGABEN (in dieser Reihenfolge):\n\n1. PYTHON BACKTESTER BAUEN\n   - Konvertiere ALLE 7 Komponenten nach Python:\n     a) Reversal Bars (Bollinger Band Breakout + Rueckkehr + Confirmations)\n     b) SuperTrend (ATR 10, Factor 3.0)\n     c) Bollinger Bands (Length 19, Mult 2)\n     d) Micro Dots (VMA + SMA + SuperTrend Confluence)\n     e) VMA Trend Line (Fast=9, Medium=18, Slow=27)\n     f) Exhaustion Lines (Swing Length 40, Bar Count 10)\n     g) 24h Volume (nur als Filter, nicht als Signal)\n   - Nutze yfinance fuer Daten\n   - Teste auf mehreren Timeframes: 5min, 1h, 4h, Daily\n   - Teste auf mehreren Tickern: SPY, AAPL, NVDA, TSLA, BTC-USD, META, GOOGL\n   - Dynamisches Risk Management:\n     * A-Level Setup (mehrere Signale confluent) = groessere Position\n     * B-Level Setup = kleinere Position\n     * Dynamischer Stop Loss (z.B. VMA Trendlinie als Stop)\n   - Berechne fuer JEDE Signal-Kombination:\n     * Win Rate\n     * Avg Return\n     * Max Drawdown\n     * Sharpe Ratio\n     * Profit Factor\n\n2. EQUITY KURVE ERSTELLEN\n   - Matplotlib Chart: Vermoegensentwicklung ueber Zeit\n   - Speichere als PNG in /home/openclaw/.openclaw/workspace/mission-control/backtest-equity.png\n\n3. MISSION CONTROL DASHBOARD ERWEITERN\n   - Neuer Tab \"Backtest\" mit:\n     * Strategie-Regeln Uebersicht\n     * Equity-Kurve als eingebettetes Bild\n     * Statistik-Tabelle (Win Rate, Sharpe, etc. pro Signal-Kombination)\n     * Download-Link fuer das Python-Script\n   - Neuer Tab/Section \"Currently Working On\" (was der Agent gerade tut)\n   - Server neustarten: sudo systemctl restart mission-control\n\n4. VERGLEICH: MEINE NACHT vs QUANT\n   - Berechne wieviele Stunden/Tage ein Quant-Programmierer fuer diese Arbeit braeuchte\n   - Inkludiere: Pine Script Analyse, Python-Konvertierung, Backtesting-Engine, Parameter-Sweep, Dashboard-Integration\n\n5. ERGEBNISSE SENDEN\n   - Schreibe detaillierten Report in /home/openclaw/.openclaw/workspace/memory/nightly-research/2026-03-06.md\n   - Sende Zusammenfassung an Telegram (5214734582):\n     Format: \"Guten Morgen Maximilian! Hier ist was ich heute Nacht gemacht habe: ...\"\n   - Poste auch in Discord #monitoring (1478855159474950377)\n\nREGELN:\n- NUR FERTIGE ERGEBNISSE — keine Vorschlaege\n- Jeder Punkt muss UMGESETZT sein\n- Python venv nutzen: source /home/openclaw/.openclaw/workspace/trading-venv/bin/activate\n- yfinance, pandas, numpy, matplotlib sind installiert\n- Backtest-Script speichern in /home/openclaw/.openclaw/workspace/scripts/trend-suite-backtester.py\n- ALLES muss bis 7:30 Berlin fertig sein (Maximilian erwartet es um 8:00)\n\nWICHTIG: Maximilian ist Trader, Ziel Multi-Millionaer. Die Backtest-Ergebnisse muessen ACTIONABLE sein.\nEr will wissen: Welche Signal-Kombinationen haben die beste Win Rate? Auf welchem Timeframe?",
       "state": {
-        "nextRunAtMs": 1772848800000
+        "nextRunAtMs": 1772935200000,
+        "lastRunAtMs": 1772848800008,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 412352,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
+      },
+      "payload": {
+        "kind": "agentTurn",
+        "message": "PRIORITAET HEUTE NACHT: BACKTESTER BAUEN\n\nDu hast den Pine Script Algorithmus \"Trend Suite (GRAETZ)\" in /home/openclaw/.openclaw/workspace/data/pinescript/trend-suite-graetz.pine (399 Zeilen).\n\nAUFGABEN (in dieser Reihenfolge):\n\n1. PYTHON BACKTESTER BAUEN\n   - Konvertiere ALLE 7 Komponenten nach Python:\n     a) Reversal Bars (Bollinger Band Breakout + Rueckkehr + Confirmations)\n     b) SuperTrend (ATR 10, Factor 3.0)\n     c) Bollinger Bands (Length 19, Mult 2)\n     d) Micro Dots (VMA + SMA + SuperTrend Confluence)\n     e) VMA Trend Line (Fast=9, Medium=18, Slow=27)\n     f) Exhaustion Lines (Swing Length 40, Bar Count 10)\n     g) 24h Volume (nur als Filter, nicht als Signal)\n   - Nutze yfinance fuer Daten\n   - Teste auf mehreren Timeframes: 5min, 1h, 4h, Daily\n   - Teste auf mehreren Tickern: SPY, AAPL, NVDA, TSLA, BTC-USD, META, GOOGL\n   - Dynamisches Risk Management:\n     * A-Level Setup (mehrere Signale confluent) = groessere Position\n     * B-Level Setup = kleinere Position\n     * Dynamischer Stop Loss (z.B. VMA Trendlinie als Stop)\n   - Berechne fuer JEDE Signal-Kombination:\n     * Win Rate\n     * Avg Return\n     * Max Drawdown\n     * Sharpe Ratio\n     * Profit Factor\n\n2. EQUITY KURVE ERSTELLEN\n   - Matplotlib Chart: Vermoegensentwicklung ueber Zeit\n   - Speichere als PNG in /home/openclaw/.openclaw/workspace/mission-control/backtest-equity.png\n\n3. MISSION CONTROL DASHBOARD ERWEITERN\n   - Neuer Tab \"Backtest\" mit:\n     * Strategie-Regeln Uebersicht\n     * Equity-Kurve als eingebettetes Bild\n     * Statistik-Tabelle (Win Rate, Sharpe, etc. pro Signal-Kombination)\n     * Download-Link fuer das Python-Script\n   - Neuer Tab/Section \"Currently Working On\" (was der Agent gerade tut)\n   - Server neustarten: sudo systemctl restart mission-control\n\n4. VERGLEICH: MEINE NACHT vs QUANT\n   - Berechne wieviele Stunden/Tage ein Quant-Programmierer fuer diese Arbeit braeuchte\n   - Inkludiere: Pine Script Analyse, Python-Konvertierung, Backtesting-Engine, Parameter-Sweep, Dashboard-Integration\n\n5. ERGEBNISSE SENDEN\n   - Schreibe detaillierten Report in /home/openclaw/.openclaw/workspace/memory/nightly-research/2026-03-06.md\n   - Sende Zusammenfassung an Telegram (5214734582):\n     Format: \"Guten Morgen Maximilian! Hier ist was ich heute Nacht gemacht habe: ...\"\n   - Poste auch in Discord #monitoring (1478855159474950377)\n\nREGELN:\n- NUR FERTIGE ERGEBNISSE — keine Vorschlaege\n- Jeder Punkt muss UMGESETZT sein\n- Python venv nutzen: source /home/openclaw/.openclaw/workspace/trading-venv/bin/activate\n- yfinance, pandas, numpy, matplotlib sind installiert\n- Backtest-Script speichern in /home/openclaw/.openclaw/workspace/scripts/trend-suite-backtester.py\n- ALLES muss bis 7:30 Berlin fertig sein (Maximilian erwartet es um 8:00)\n\nWICHTIG: Maximilian ist Trader, Ziel Multi-Millionaer. Die Backtest-Ergebnisse muessen ACTIONABLE sein.\nEr will wissen: Welche Signal-Kombinationen haben die beste Win Rate? Auf welchem Timeframe?",
+        "model": "anthropic/claude-opus-4-6",
+        "timeoutSeconds": 3600
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "5214734582"
+      }
+    },
+    {
+      "id": "78910bee-53de-4ade-b58b-9032e8546d4b",
+      "name": "work-watchdog",
+      "description": "Alle 30 Min: Prüft ob Cron-Jobs fehlgeschlagen sind, offene Aufgaben existieren, oder Arbeit liegengeblieben ist. Alarmiert via Telegram.",
+      "enabled": true,
+      "createdAtMs": 1772863200000,
+      "updatedAtMs": 1772852429490,
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/30 * * * *",
+        "tz": "Europe/Berlin"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Du bist der Work-Watchdog — ein autonomer Task-Manager. Du prüfst den Status UND erledigst offene Arbeit.\n\nSCHRITT 1: STATUS PRÜFEN\n- Lies /home/openclaw/.openclaw/workspace/mission-control/live-status.json\n- Prüfe \"todos\": Was ist pending? Was ist blocked? Was hat hohe Priorität?\n- Lies /home/openclaw/.openclaw/cron/jobs.json — alle Jobs ok?\n- Disk/RAM ok?\n\nSCHRITT 2: ARBEIT ERLEDIGEN\nWenn ein Todo diese Kriterien erfüllt, starte einen Sub-Agent dafür:\n- Status ist \"pending\" (NICHT \"blocked\" oder \"done\")\n- Hat KEIN \"decision_needed\" (braucht keine Entscheidung von Maximilian)\n- Ist nicht gerade schon in Arbeit (kein running Agent mit gleichem Label)\n\nSo startest du einen Sub-Agent:\n1. Formuliere eine klare Aufgabe basierend auf dem Todo\n2. Nutze sessions_spawn mit runtime=\"subagent\", model=\"anthropic/claude-opus-4-6\"\n3. Update live-status.json: Setze Todo-Status auf \"in-progress\" und füge neuen Agent in agents Array ein\n4. Melde via Telegram was du gestartet hast\n\nSCHRITT 3: ERGEBNISSE PRÜFEN\n- Wenn ein Agent \"done\" ist: Prüfe ob das Ergebnis stimmt (Dateien erstellt? Fehler?)\n- Update Todo-Status auf \"done\" wenn erfolgreich\n- Melde Ergebnis an Maximilian\n\nREGELN:\n- MAXIMAL 1 Sub-Agent pro Watchdog-Run starten (nicht alles gleichzeitig)\n- Tasks mit \"decision_needed\" → NUR erinnern, NICHT starten\n- Tasks mit \"blockedBy\" → Prüfe ob Blocker erledigt ist, wenn ja: entblocke und starte\n- Zwischen 23:00-07:00 Berlin: Nur kritische Probleme melden, KEINE neuen Tasks starten\n- Update IMMER live-status.json wenn du was änderst\n- Telegram-Meldung: \"🤖 Watchdog: Starte [Task] mit Opus\" oder \"📋 Warte auf Entscheidung: [was]\"\n- Wenn ALLES erledigt und nichts zu tun: HEARTBEAT_OK\n\nPFADE:\n- live-status.json: /home/openclaw/.openclaw/workspace/mission-control/live-status.json\n- Memory: /home/openclaw/.openclaw/workspace/memory/\n- Cron Jobs: /home/openclaw/.openclaw/cron/jobs.json",
+        "model": "anthropic/claude-opus-4-6",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "5214734582"
+      },
+      "state": {
+        "nextRunAtMs": 1772854200000,
+        "lastRunAtMs": 1772852400009,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 29481,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0,
+        "lastDelivered": false,
+        "runningAtMs": 1772854200005
+      }
+    },
+    {
+      "id": "49c3edb4-77d9-4547-8a6e-92ce29f46fc6",
+      "name": "shardib2-positions",
+      "description": "Analysiert ShardiB2 Tweets auf neue Trading-Positionen → Discord #shardib2",
+      "enabled": true,
+      "createdAtMs": 1772797885116,
+      "updatedAtMs": 1772853703361,
+      "schedule": {
+        "kind": "every",
+        "everyMs": 1800000,
+        "anchorMs": 1772797885116
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Du analysierst ShardiB2 Tweets auf neue Trading-Positionen.\n\nSchritt 1: Lies /home/openclaw/.openclaw/workspace/data/shardib2/signals.json (bekannte Positionen).\n\nSchritt 2: Lies die letzten 20 ShardiB2 Discord-Posts aus Channel 1478757600848773152 (message tool: action=read, channel=discord, channelId=1478757600848773152, limit=20).\n\nSchritt 3: Analysiere Posts auf NEUE Positionen die noch NICHT in signals.json stehen:\n- Erkenne: \"I bought\", \"Added\", \"New position\", \"Entered\", \"Long\", \"Short\", \"Opened\"\n- Ticker-Symbole ($XYZ oder Firmenname)\n- Entry-Preise wenn genannt\n\nSchritt 4: Wenn neue Positionen gefunden:\n- Füge sie zu signals.json hinzu (lies Datei, append, schreib zurück)\n- Format: \"🆕 ShardiB2 neue Position: $TICKER — [Richtung] bei $PREIS — [Originaltext]\"\n\nWenn keine neuen Positionen: HEARTBEAT_OK",
+        "model": "anthropic/claude-sonnet-4-6",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "discord",
+        "to": "1478757600848773152"
+      },
+      "state": {
+        "nextRunAtMs": 1772855485386,
+        "lastRunAtMs": 1772853685386,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 17975,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "consecutiveErrors": 0
       }
     }
   ]

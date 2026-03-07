@@ -68,3 +68,11 @@ CLI-Flag für Empfänger ist `--target <dest>`, nicht `--to`. Fehler verursachte
 - Tags: openclaw, cli, discord
 
 ---
+
+### 2026-03-06: Sub-Agent Status vergessen zu updaten
+- **Category**: correction
+- **Area**: backend
+- **What happened**: Task-Creator UI Sub-Agent war fertig, aber ich hab vergessen den Agent-Status UND Todo-Status in live-status.json auf "done" zu setzen
+- **Root cause**: Kein automatischer Prozess dafür, nur manuelle Updates
+- **Fix**: In SOUL.md als PFLICHT-Regel eingetragen — nach JEDEM Sub-Agent sofort beides updaten
+- **Status**: resolved

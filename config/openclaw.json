@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.3.3",
-    "lastTouchedAt": "2026-03-05T10:31:50.965Z"
+    "lastTouchedAt": "2026-03-06T12:01:39.648Z"
   },
   "wizard": {
     "lastRunAt": "2026-03-05T10:31:50.897Z",
@@ -196,6 +196,9 @@
       "token": "[DISCORD_BOT_TOKEN]",
       "groupPolicy": "allowlist",
       "streaming": "off",
+      "actions": {
+        "channels": true
+      },
       "dmPolicy": "allowlist",
       "allowFrom": [
         "690605911856644236"
@@ -246,6 +249,36 @@
       ]
     }
   },
+  "memory": {
+    "backend": "qmd",
+    "citations": "auto",
+    "qmd": {
+      "command": "/home/openclaw/.bun/bin/qmd",
+      "searchMode": "search",
+      "includeDefaultMemory": true,
+      "paths": [
+        {
+          "path": "/home/openclaw/.openclaw/workspace/.learnings",
+          "name": "learnings",
+          "pattern": "**/*.md"
+        }
+      ],
+      "sessions": {
+        "enabled": true,
+        "retentionDays": 90
+      },
+      "update": {
+        "interval": "5m",
+        "debounceMs": 15000,
+        "onBoot": true,
+        "waitForBootSync": false
+      },
+      "limits": {
+        "maxResults": 8,
+        "timeoutMs": 5000
+      }
+    }
+  },
   "skills": {
     "install": {
       "nodeManager": "pnpm"
@@ -275,36 +308,6 @@
       "memory-lancedb": {
         "enabled": false
       }
-    }
-  },
-  "memory": {
-    "backend": "qmd",
-    "citations": "auto",
-    "qmd": {
-      "command": "/home/openclaw/.bun/bin/qmd",
-      "includeDefaultMemory": true,
-      "searchMode": "search",
-      "sessions": {
-        "enabled": true,
-        "retentionDays": 90
-      },
-      "update": {
-        "interval": "5m",
-        "debounceMs": 15000,
-        "onBoot": true,
-        "waitForBootSync": false
-      },
-      "limits": {
-        "maxResults": 8,
-        "timeoutMs": 5000
-      },
-      "paths": [
-        {
-          "name": "learnings",
-          "path": "/home/openclaw/.openclaw/workspace/.learnings",
-          "pattern": "**/*.md"
-        }
-      ]
     }
   }
 }
